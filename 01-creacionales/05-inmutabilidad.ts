@@ -35,9 +35,9 @@ class CodeEditorState {
   displayState() {
     console.log("\n%cEstado del editor: ", COLORS.green);
     console.log(`
-        Contenido: ${this.content},
-        Cursor Pos: ${this.cursorPosition},
-        UnsavedChanges: ${this.unsavedChanges},
+    Contenido:\n${this.content}
+    Cursor Pos: ${this.cursorPosition}
+    UnsavedChanges: ${this.unsavedChanges}
     `);
   }
 }
@@ -54,6 +54,14 @@ class CodeEditorHistory {
     this.currentIndex++;
   }
 
+  undo(): CodeEditorState | null {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+      return this.history[this.currentIndex];
+    }
+    return null;
+  }
+
   redo(): CodeEditorState | null {
     if (this.currentIndex < this.history.length - 1) {
       this.currentIndex++;
@@ -62,3 +70,43 @@ class CodeEditorHistory {
     return null;
   }
 }
+
+function main() {
+  const history: CodeEditorHistory = new CodeEditorHistory();
+  let editorState: CodeEditorState | null = new CodeEditorState(
+    'console.log("Hola Mundo)"',
+    2,
+    false,
+  );
+  history.save(editorState);
+  console.log("%cEstado Inicial: ", COLORS.blue);
+  editorState.displayState();
+
+  editorState = editorState.copyWith({
+    content: "console.log('Hola Mundo');\nconsole.log('Nueva Linea');",
+    cursorPosition: 3,
+    unsavedChanges: true,
+  });
+  history.save(editorState);
+
+  console.log("%cDespués del primer cambio: ", COLORS.blue);
+  editorState.displayState();
+
+  editorState = editorState.copyWith({ cursorPosition: 5 });
+  history.save(editorState);
+
+  console.log("%cDespués de mover el cursor: ", COLORS.blue);
+  editorState.displayState();
+
+  editorState = history.undo();
+
+  console.log("%cDespués del undo: ", COLORS.blue);
+  editorState?.displayState();
+
+  editorState = history.redo();
+
+  console.log("%cDespués del redo: ", COLORS.blue);
+  editorState?.displayState();
+}
+
+main();
