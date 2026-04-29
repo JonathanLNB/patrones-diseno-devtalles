@@ -8,45 +8,60 @@
  * * objeto de configuración.
  */
 
-import { COLORS } from '../helpers/colors.ts';
-
 class DatabaseConnection {
-    private static instance: DatabaseConnection;
-    private connected: boolean = false;
+  private static instance: DatabaseConnection;
+  private connected: boolean = false;
 
-    // Constructor privado para evitar instancias directas
-    private constructor() {}
+  // Constructor privado para evitar instancias directas
+  private constructor() {
+    this.connected = false;
+  }
 
-    // Método estático para obtener la instancia única
-    public static getInstance(): DatabaseConnection {
-        // Completar: implementar el patrón Singleton
-        throw new Error('Method not implemented.');
+  // Método estático para obtener la instancia única
+  public static getInstance(): DatabaseConnection {
+    // Completar: implementar el patrón Singleton
+    if (!DatabaseConnection.instance) {
+      DatabaseConnection.instance = new DatabaseConnection();
     }
+    return DatabaseConnection.instance;
+  }
 
-    // Método para conectar a la base de datos
-    public connect(): void {
-        // Completar: si no está conectado, mostrar mensaje de conexión
+  // Método para conectar a la base de datos
+  public connect(): void {
+    if (this.connected) {
+      console.log("Database is already connected");
+      return;
     }
+    this.connected = true;
+    console.log("Database connected");
+    // Completar: si no está conectado, mostrar mensaje de conexión
+  }
 
-    // Método para desconectar de la base de datos
-    public disconnect(): void {
-        // Completar: desconectar y mostrar mensaje de desconexión
+  // Método para desconectar de la base de datos
+  public disconnect(): void {
+    if (this.connected) {
+      this.connected = false;
+      console.log("Database disconnected");
+      return;
     }
+    console.log("Database is already disconnected");
+    // Completar: desconectar y mostrar mensaje de desconexión
+  }
 }
 
 // Pruebas
 function main() {
-    const db1 = DatabaseConnection.getInstance();
-    db1.connect(); // Debería conectar a la base de datos
+  const db1 = DatabaseConnection.getInstance();
+  db1.connect(); // Debería conectar a la base de datos
 
-    const db2 = DatabaseConnection.getInstance();
-    db2.connect(); // Debería mostrar que ya existe una conexión activa
+  const db2 = DatabaseConnection.getInstance();
+  db2.connect(); // Debería mostrar que ya existe una conexión activa
 
-    console.log('Son iguales:', db1 === db2); // Debería mostrar true
+  console.log("Son iguales:", db1 === db2); // Debería mostrar true
 
-    db1.disconnect(); // Debería cerrar la conexión
+  db1.disconnect(); // Debería cerrar la conexión
 
-    db2.connect(); // Ahora debería conectar de nuevo, ya que se cerró la anterior
+  db2.connect(); // Ahora debería conectar de nuevo, ya que se cerró la anterior
 }
 
 main();
