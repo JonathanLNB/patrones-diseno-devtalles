@@ -1,0 +1,123 @@
+/**
+ * ! Patrón Facade
+ * Este patrón proporciona una interfaz unificada para un conjunto de interfaces
+ * en un subsistema.
+ *
+ * Facade define una interfaz de nivel más alto que hace que el subsistema
+ * sea más fácil de usar.
+ *
+ * * Es útil cuando un subsistema es complejo o difícil de entender para
+ * * proporcionar una interfaz simplificada para el cliente.
+ *
+ * https://refactoring.guru/es/design-patterns/facade
+ */
+import {COLORS} from "../helpers/colors.ts";
+
+class Projector {
+  tunrOn() {
+    console.log("Proyecto encendido");
+  }
+
+  turnOff() {
+    console.log("Proyector apagado");
+  }
+}
+
+class SoundSystem {
+  on() {
+    console.log("Sistema de sonido encendido");
+  }
+  off() {
+    console.log("Sistema de sonido apagado");
+  }
+}
+
+class VideoPlayer {
+  on() {
+    console.log("Video player encendido");
+  }
+  off() {
+    console.log("Video player apagado");
+  }
+
+  play(movie: string) {
+    console.log(`Reproduciendo %c${movie}`, COLORS.blue);
+  }
+
+  stop() {
+    console.log("Película detenida");
+  }
+}
+
+class PopcornMaker {
+  poppingPopcorn() {
+    console.log("Haciendo palomitas");
+  }
+
+  turnPoppingPopcorn() {
+    console.log("Deteniendo maquina de palomitas");
+  }
+}
+
+interface HomeTheaterOptions {
+  projector: Projector;
+  soundSystem: SoundSystem;
+  videoPlayer: VideoPlayer;
+  popCorner: PopcornMaker;
+}
+
+class HomeTheaterFacade {
+  private projector: Projector;
+  private soundSystem: SoundSystem;
+  private videoPlayer: VideoPlayer;
+  private popCorner: PopcornMaker;
+
+  constructor(
+    { projector, soundSystem, videoPlayer, popCorner }: HomeTheaterOptions,
+  ) {
+    this.projector = projector;
+    this.soundSystem = soundSystem;
+    this.videoPlayer = videoPlayer;
+    this.popCorner = popCorner;
+  }
+
+  watchMovie(movie: string) {
+    console.log("%c\n\nPreparando para ver la película", COLORS.green);
+    this.projector.tunrOn();
+    this.soundSystem.on();
+    this.popCorner.poppingPopcorn();
+    this.videoPlayer.on();
+    this.videoPlayer.play(movie);
+    console.log("%cDisfrute la película", COLORS.green);
+  }
+
+  endWatchingMovie() {
+    console.log("%c\n\nPreparando para detener la película", COLORS.brown);
+    this.projector.turnOff();
+    this.soundSystem.off();
+    this.popCorner.turnPoppingPopcorn();
+    this.videoPlayer.stop();
+    this.videoPlayer.off();
+    console.log("%cSistema apagado", COLORS.brown);
+  }
+}
+
+function main() {
+  const projector = new Projector();
+  const soundSystem = new SoundSystem();
+  const videoPlayer = new VideoPlayer();
+  const popCorner = new PopcornMaker();
+
+  const homeTheater: HomeTheaterFacade = new HomeTheaterFacade({
+    projector,
+    soundSystem,
+    videoPlayer,
+    popCorner,
+  });
+
+  homeTheater.watchMovie("Ghostbusters");
+
+  homeTheater.endWatchingMovie();
+}
+
+main();
